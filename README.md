@@ -207,6 +207,7 @@ variable "service_cidr" {
 ```
 
 <br>
+
 You can see that the web page is now accessible from anywhere in the world at: `http://51.11.225.21:80`
 
 <br>
