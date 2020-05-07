@@ -95,6 +95,7 @@ aks-default-25778934-vmss000000   Ready    agent   3m28s   v1.14.7   192.168.1.4
 ```
 
 <br>
+
 The output shows that the IP address of the node is `192.168.1.4`. This is because we already provided an address prefix for the subnet in `variables.tf` as follows:
 
 <br>
@@ -109,6 +110,7 @@ variable "address_prefix" {
 ```
 
 <br>
+
 So far, neither `deployment` nor `pod` has been created.
 
 <br>
@@ -123,6 +125,7 @@ No resources found in default namespace.
 ```
 
 <br>
+
 Now, we just deploy the `nginx` deployment.
 
 <br>
@@ -150,6 +153,7 @@ nginx-deployment-756d9fd5f9-vhhx8   1/1     Running   0          31s   10.244.0.
 ```
 
 <br>
+
 The output shows that the IP address of the pod is `10.244.0.11`. This is because we already provided the IP address range for pods in `variables.tf` as follows:
 
 <br>
