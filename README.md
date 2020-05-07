@@ -29,7 +29,7 @@ Therefore, you should use `kubenet` if:
 
 
 
-# Set up Azure storage to store Terraform state
+## Set up Azure storage to store Terraform state
 
 Terraform tracks state locally via the `terraform.tfstate` file. 
 This approach is considered as a fine method if only one person works on the Terraform module. 
@@ -39,29 +39,30 @@ Therefore, we need to create a storage container into which the Terraform state 
 <br>
 In this regard, there are 4 steps to be done. The first 3 steps should be performed by running `backend.tf`. 
 
-## Step 1: Azure Resource Group
+### Step 1: Azure Resource Group
 
 We need to create an Azure Resource Group which includes the storage account in order to store the Terraform state. 
 It would be more appropriate if we create an individual resource group different from the resource group in which all the required Azure resources exist. 
 
-## Step 2: Azure Storage Account
+### Step 2: Azure Storage Account
 
 The storage account provides a unique namespace for your Azure Storage data that is accessible from anywhere in the world over HTTP or HTTPS. 
 Data in the Azure storage account is durable and highly available, secure, and massively scalable. 
 Therefore, We create an Azure storage account which contains all of our Azure Storage data objects such as blobs to store the Terraform state. 
 
-## Step 3: Azure Storage Container
+### Step 3: Azure Storage Container
 
 We should create a blob container within the Azure storage account to store the Terraform state file. 
 Blob storage container also provides the locking mechanism. It means that only one person can gain access to the state file and run `terraform plan` or `terraform apply` at the same time. 
 This mechanism ensures the Terraform state file will not be corrupted due to mutual access. 
 
-## Step 4: Configure the Terraform backend
+### Step 4: Configure the Terraform backend
 
 When you run `backend.tf` and it has been successfully performed, you need to configure the Terraform backend. 
 To this end, two parameters named `storage_account_name` and `storage_access_key` should be fetched firstly.
 
 
+<br>
 <br>
 
 ```
@@ -69,6 +70,7 @@ root@station1:~# terraform output storage_account_name
 backend6e780a30fa87a67b
 ```
 
+<br>
 <br>
 
 ```
@@ -80,10 +82,11 @@ k7z89BHy9yQIEWxJU/tVrOamIe9fKwFQcZcG6d/o8hU2J9iaJcokTYd7fxVlRS7ITmGaAgx9Zub+8jdS
 These two values should be manually put in `init.tf`. This is because the Terraform backend defined in `init.tf` would not accept variables automatically.
 
 
-# Results
+## Results
 
 We now list the cluster nodes' IP address.
 
+<br>
 <br>
 
 ```
@@ -95,6 +98,7 @@ aks-default-25778934-vmss000000   Ready    agent   3m28s   v1.14.7   192.168.1.4
 <br>
 The output shows that the IP address of the node is `192.168.1.4`. This is because we already provided an address prefix for the subnet in `variables.tf` as follows:
 
+<br>
 <br>
 
 ```
@@ -109,6 +113,7 @@ variable "address_prefix" {
 So far, neither `deployment` nor `pod` has been created.
 
 <br>
+<br>
 
 ```
 root@station1:~# kubectl get deployments -o wide
@@ -121,6 +126,7 @@ No resources found in default namespace.
 <br>
 Now, we just deploy the `nginx` deployment.
 
+<br>
 <br>
 
 ```
@@ -136,6 +142,7 @@ nginx-deployment   1/1     1            1           3m18s   nginx        nginx:1
 We list the pods' IP address.
 
 <br>
+<br>
 
 ```
 root@station1:~# kubectl get pods -o wide
@@ -146,6 +153,7 @@ nginx-deployment-756d9fd5f9-vhhx8   1/1     Running   0          31s   10.244.0.
 <br>
 The output shows that the IP address of the pod is `10.244.0.11`. This is because we already provided the IP address range for pods in `variables.tf` as follows:
 
+<br>
 <br>
 
 ```
@@ -161,6 +169,7 @@ We would like to expose the service to clients outside the cluster.
 To this end, we create a Load Balancer-type service for nginx.
 
 <br>
+<br>
 
 ```
 root@station1:~# kubectl expose deployment nginx-deployment --type=LoadBalancer --name nginx-http
@@ -170,6 +179,7 @@ service/nginx-http exposed
 <br>
 We list the services' IP address.
 
+<br>
 <br>
 
 ```
@@ -183,6 +193,7 @@ nginx-http   LoadBalancer   10.0.39.124   51.11.225.21   80:31040/TCP   55s   ap
 The output shows that the IP address of the service is `10.0.39.124`. This is because we already provided the IP address range for services in `variables.tf` as follows:
 
 <br>
+<br>
 
 ```
 variable "service_cidr" {
@@ -195,6 +206,7 @@ variable "service_cidr" {
 <br>
 You can see that the web page is now accessible from anywhere in the world at: `http://51.11.225.21:80`
 
+<br>
 <br>
 
 ```
@@ -230,13 +242,14 @@ Commercial support is available at
 If you would like to get inside the nginx container in the pod, run the following command:
 
 <br>
+<br>
 
 ```
 root@station1:~# kubectl exec -it nginx-deployment-756d9fd5f9-vhhx8 -c nginx -- bash
 ```
 
 
-# SSH to the Azure cluster node
+## SSH to the Azure cluster node
 
 For the maintenance or troubleshooting, you can connect to the Azure AKS cluster node via SSH.
 To this end, first of all, you need to create a `debian` container on the cluster as follows. This container is called `helper`.
@@ -254,6 +267,7 @@ root@aks-ssh:/#
 Now, open a new terminal window and copy your private SSH key into the `helper` pod. This private key is used to create the SSH into the AKS node.
 
 <br>
+<br>
 
 ```
 root@station1:~# kubectl cp ~/.ssh/id_rsa $(kubectl get pod -l run=aks-ssh -o jsonpath='{.items[0].metadata.name}'):/id_rsa
@@ -263,6 +277,7 @@ root@station1:~# kubectl cp ~/.ssh/id_rsa $(kubectl get pod -l run=aks-ssh -o js
 If required, change `~/.ssh/id_rsa` to location of your private SSH key. 
 Now if you come back to previous terminal window where you are into the `helper` container, you can see the private key `id_rsa`.
 
+<br>
 <br>
 
 ```
@@ -274,6 +289,7 @@ bin  boot  dev  etc  home  id_rsa  lib  lib64  media  mnt  opt  proc  root  run 
 In the `helper` container, you can connect to the cluster node and SSH to it. 
 After running the following command, you will get inside the cluster node automatically.
 
+<br>
 <br>
 
 ```
@@ -290,6 +306,7 @@ ubuntu@aks-default-25778934-vmss000000:~$
 This username which is used to connect to the cluster node via SSH is `ubuntu` since the admin username for the Linux OS of the nodes in the cluster is already defined in `variables.tf` as follows:
 
 <br>
+<br>
 
 ```
 variable "admin_username" {
@@ -302,6 +319,7 @@ variable "admin_username" {
 <br>
 When you are in the cluster node machine, run `ip addr show docker0` command to check the bridge's IP address and netmask.
 
+<br>
 <br>
 
 ```
@@ -316,6 +334,7 @@ ubuntu@aks-default-25778934-vmss000000:~$
 <br>
 The output shows that `inet` is `172.17.0.1/16`. This is because we already provided the IP address range for the Docker bridge on nodes in `variables.tf` as follows:
 
+<br>
 <br>
 
 ```
