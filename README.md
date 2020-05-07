@@ -302,6 +302,7 @@ ubuntu@aks-default-25778934-vmss000000:~$
 ```
 
 <br>
+
 This username which is used to connect to the cluster node via SSH is `ubuntu` since the admin username for the Linux OS of the nodes in the cluster is already defined in `variables.tf` as follows:
 
 <br>
@@ -316,6 +317,7 @@ variable "admin_username" {
 ```
 
 <br>
+
 When you are in the cluster node machine, run `ip addr show docker0` command to check the bridge's IP address and netmask.
 
 <br>
