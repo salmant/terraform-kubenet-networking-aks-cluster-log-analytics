@@ -193,6 +193,7 @@ nginx-http   LoadBalancer   10.0.39.124   51.11.225.21   80:31040/TCP   55s   ap
 ```
 
 <br>
+
 The output shows that the IP address of the service is `10.0.39.124`. This is because we already provided the IP address range for services in `variables.tf` as follows:
 
 <br>
