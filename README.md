@@ -5,9 +5,12 @@ Pods receive an IP address from a logically different address space to the Azure
 Therefore, NAT (Network Address Translation) is then configured so that pods are able to reach resources on the Azure virtual network.
 <br>
 
+
 ![Image](https://docs.microsoft.com/en-us/azure/aks/media/use-kubenet/kubenet-overview.png)
 
+
 <br>
+
 With `kubenet`, only the nodes receive an IP address in the virtual network subnet. 
 Pods across multiple nodes cannot communicate directly with each other. 
 Instead, User Defined Routing (UDR) and IP forwarding can be used for connectivity between pods across nodes. 
@@ -16,9 +19,13 @@ The maximum number of pods per node that you can configure with `kubenet` in AKS
 
 <br>
 Therefore, you should use `kubenet` if: 
+
 * You have a limited IP address space. 
+
 * Most of communications amon pods are within the cluster. 
+
 * You do not need advanced AKS features such as `Virtual Nodes` or `Azure Network Policy`. 
+
 
 
 # Set up Azure storage to store Terraform state
@@ -53,13 +60,16 @@ This mechanism ensures the Terraform state file will not be corrupted due to mut
 When you run `backend.tf` and it has been successfully performed, you need to configure the Terraform backend. 
 To this end, two parameters named `storage_account_name` and `storage_access_key` should be fetched firstly.
 
+
 <br>
+
 ```
 root@station1:~# terraform output storage_account_name
 backend6e780a30fa87a67b
 ```
 
 <br>
+
 ```
 root@station1:~# terraform output storage_access_key
 k7z89BHy9yQIEWxJU/tVrOamIe9fKwFQcZcG6d/o8hU2J9iaJcokTYd7fxVlRS7ITmGaAgx9Zub+8jdS0vNpCg==
@@ -74,6 +84,7 @@ These two values should be manually put in `init.tf`. This is because the Terraf
 We now list the cluster nodes' IP address.
 
 <br>
+
 ```
 root@station1:~# kubectl get nodes -o wide
 NAME                              STATUS   ROLES   AGE     VERSION   INTERNAL-IP   EXTERNAL-IP   OS-IMAGE             KERNEL-VERSION      CONTAINER-RUNTIME
@@ -84,6 +95,7 @@ aks-default-25778934-vmss000000   Ready    agent   3m28s   v1.14.7   192.168.1.4
 The output shows that the IP address of the node is `192.168.1.4`. This is because we already provided an address prefix for the subnet in `variables.tf` as follows:
 
 <br>
+
 ```
 variable "address_prefix" {
   description = "The address prefix to use for the subnet."
@@ -96,6 +108,7 @@ variable "address_prefix" {
 So far, neither `deployment` nor `pod` has been created.
 
 <br>
+
 ```
 root@station1:~# kubectl get deployments -o wide
 No resources found in default namespace.
@@ -176,6 +189,7 @@ variable "service_cidr" {
 You can see that the web page is now accessible from anywhere in the world at: `http://51.11.225.21:80`
 
 <br>
+
 ```
 root@station1:~# curl 51.11.225.21:80
 <!DOCTYPE html>
