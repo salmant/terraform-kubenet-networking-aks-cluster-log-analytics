@@ -4,7 +4,7 @@ By default, AKS clusters use `kubenet`. With `kubenet`, nodes get an IP address 
 Pods receive an IP address from a logically different address space to the Azure virtual network subnet of the nodes.
 Therefore, NAT (Network Address Translation) is then configured so that pods are able to reach resources on the Azure virtual network.
 <br>
-
+<br>
 
 ![Image](https://docs.microsoft.com/en-us/azure/aks/media/use-kubenet/kubenet-overview.png)
 
@@ -18,6 +18,7 @@ Azure supports a maximum of 400 routes in a UDR, so it is not possible to have a
 The maximum number of pods per node that you can configure with `kubenet` in AKS is 110. 
 
 <br>
+
 Therefore, you should use `kubenet` if: 
 
 * You have a limited IP address space. 
@@ -121,6 +122,7 @@ No resources found in default namespace.
 Now, we just deploy the `nginx` deployment.
 
 <br>
+
 ```
 root@station1:~# kubectl apply -f sample-deployment.yaml
 deployment.apps/nginx-deployment created
@@ -134,6 +136,7 @@ nginx-deployment   1/1     1            1           3m18s   nginx        nginx:1
 We list the pods' IP address.
 
 <br>
+
 ```
 root@station1:~# kubectl get pods -o wide
 NAME                                READY   STATUS    RESTARTS   AGE   IP            NODE                              NOMINATED NODE   READINESS GATES
@@ -144,6 +147,7 @@ nginx-deployment-756d9fd5f9-vhhx8   1/1     Running   0          31s   10.244.0.
 The output shows that the IP address of the pod is `10.244.0.11`. This is because we already provided the IP address range for pods in `variables.tf` as follows:
 
 <br>
+
 ```
 variable "pod_cidr" {
   description = "IP address range (in CIDR notation) used for pod IP addresses."
@@ -157,6 +161,7 @@ We would like to expose the service to clients outside the cluster.
 To this end, we create a Load Balancer-type service for nginx.
 
 <br>
+
 ```
 root@station1:~# kubectl expose deployment nginx-deployment --type=LoadBalancer --name nginx-http
 service/nginx-http exposed
@@ -166,6 +171,7 @@ service/nginx-http exposed
 We list the services' IP address.
 
 <br>
+
 ```
 root@station1:~# kubectl get services -o wide
 NAME         TYPE           CLUSTER-IP    EXTERNAL-IP    PORT(S)        AGE   SELECTOR
@@ -177,6 +183,7 @@ nginx-http   LoadBalancer   10.0.39.124   51.11.225.21   80:31040/TCP   55s   ap
 The output shows that the IP address of the service is `10.0.39.124`. This is because we already provided the IP address range for services in `variables.tf` as follows:
 
 <br>
+
 ```
 variable "service_cidr" {
   description = "It is the network range used by the Kubernetes services."
@@ -223,6 +230,7 @@ Commercial support is available at
 If you would like to get inside the nginx container in the pod, run the following command:
 
 <br>
+
 ```
 root@station1:~# kubectl exec -it nginx-deployment-756d9fd5f9-vhhx8 -c nginx -- bash
 ```
@@ -235,6 +243,7 @@ To this end, first of all, you need to create a `debian` container on the cluste
 After running the following command, you will get inside the container instance automatically.
 
 <br>
+
 ```
 root@station1:~# kubectl run --generator=run-pod/v1 -it --rm aks-ssh --image=debian
 
@@ -245,6 +254,7 @@ root@aks-ssh:/#
 Now, open a new terminal window and copy your private SSH key into the `helper` pod. This private key is used to create the SSH into the AKS node.
 
 <br>
+
 ```
 root@station1:~# kubectl cp ~/.ssh/id_rsa $(kubectl get pod -l run=aks-ssh -o jsonpath='{.items[0].metadata.name}'):/id_rsa
 ```
@@ -254,6 +264,7 @@ If required, change `~/.ssh/id_rsa` to location of your private SSH key.
 Now if you come back to previous terminal window where you are into the `helper` container, you can see the private key `id_rsa`.
 
 <br>
+
 ```
 root@aks-ssh:/# dir
 bin  boot  dev  etc  home  id_rsa  lib  lib64  media  mnt  opt  proc  root  run  sbin  srv  sys  tmp  usr  var
@@ -264,6 +275,7 @@ In the `helper` container, you can connect to the cluster node and SSH to it.
 After running the following command, you will get inside the cluster node automatically.
 
 <br>
+
 ```
 root@aks-ssh:/# apt-get update && apt-get install openssh-client -y
 
@@ -278,6 +290,7 @@ ubuntu@aks-default-25778934-vmss000000:~$
 This username which is used to connect to the cluster node via SSH is `ubuntu` since the admin username for the Linux OS of the nodes in the cluster is already defined in `variables.tf` as follows:
 
 <br>
+
 ```
 variable "admin_username" {
   description = "The admin username for the Linux OS of the nodes in the cluster."
@@ -290,6 +303,7 @@ variable "admin_username" {
 When you are in the cluster node machine, run `ip addr show docker0` command to check the bridge's IP address and netmask.
 
 <br>
+
 ```
 ubuntu@aks-default-25778934-vmss000000:~$ ip addr show docker0
 3: docker0: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc noqueue state DOWN group default
@@ -303,6 +317,7 @@ ubuntu@aks-default-25778934-vmss000000:~$
 The output shows that `inet` is `172.17.0.1/16`. This is because we already provided the IP address range for the Docker bridge on nodes in `variables.tf` as follows:
 
 <br>
+
 ```
 variable "docker_bridge_cidr" {
   description = "IP address range (in CIDR notation) used as the Docker bridge IP address on nodes."
