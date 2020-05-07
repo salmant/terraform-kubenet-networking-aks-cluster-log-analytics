@@ -29,7 +29,7 @@ Therefore, you should use `kubenet` if:
 
 
 
-## Set up Azure storage to store Terraform state
+## Set up an Azure Storage to store Terraform state
 
 Terraform tracks state locally via the `terraform.tfstate` file. 
 This approach is considered as a fine method if only one person works on the Terraform module. 
@@ -86,7 +86,6 @@ These two values should be manually put in `init.tf`. This is because the Terraf
 
 We now list the cluster nodes' IP address.
 
-<br>
 <br>
 
 ```
@@ -332,6 +331,7 @@ ubuntu@aks-default-25778934-vmss000000:~$
 ```
 
 <br>
+
 The output shows that `inet` is `172.17.0.1/16`. This is because we already provided the IP address range for the Docker bridge on nodes in `variables.tf` as follows:
 
 <br>
