@@ -132,7 +132,7 @@ resource "azurerm_subnet" "node_subnet" {
 * Grant AKS Cluster access to join the node-subnet
 */
 resource "azurerm_role_assignment" "aks_subnet" {
-  scope                = "${azurerm_subnet.first.id}"
+  scope                = "${azurerm_subnet.node_subnet.id}"
   role_definition_name = "Network Contributor"
   principal_id         = "${azuread_service_principal.auth.object_id}"
 }
@@ -168,7 +168,7 @@ resource "azurerm_kubernetes_cluster" "scalable_aks" {
     vm_size                 = "${var.vm_size}"
     os_disk_size_gb         = "${var.os_disk_size_gb}"
     availability_zones      = "${var.availability_zones}"
-    vnet_subnet_id          = "${azurerm_subnet.first.id}"
+    vnet_subnet_id          = "${azurerm_subnet.node_subnet.id}"
   }
 
   service_principal {
